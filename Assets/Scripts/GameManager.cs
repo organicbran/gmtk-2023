@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Player player;
-    //[SerializeField] private SnakeHead snake;
     [SerializeField] private Transform world;
     [SerializeField] private GameObject stopPrefab;
     [SerializeField] private LayerMask stopLayer;
@@ -22,7 +21,6 @@ public class GameManager : MonoBehaviour
 
     private List<Stop> stopList = new List<Stop>();
     private List<Stop> activeStopList = new List<Stop>();
-    //private List<Transform> snakeTargetList = new List<Transform>();
     private int stopCount;
     private float stopSpawnTimer;
 
@@ -30,9 +28,6 @@ public class GameManager : MonoBehaviour
     {
         ResetStopSpawnTimer();
         ActivateStops();
-
-        //snake.SetTarget(player.transform);
-        //SnakeRetarget();
     }
 
     private void Update()
@@ -65,7 +60,6 @@ public class GameManager : MonoBehaviour
         if (fixedUpdateCount % 20 == 0)
         {
             ActivateStops();
-            //SnakeRetarget();
         }
     }
 
@@ -87,37 +81,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /*
-    private void SnakeRetarget()
-    {
-        // give snake its target
-        snakeTargetList.Clear();
-        snakeTargetList.Add(player.transform);
-        foreach (Stop stop in activeStopList)
-        {
-            snakeTargetList.Add(stop.transform);
-        }
-
-        int targetIndex = 0;
-        float shortestDistance = Vector3.Distance(snake.transform.position, snakeTargetList[0].position);
-        for (int i = 1; i < snakeTargetList.Count; i++)
-        {
-            if (Vector3.Distance(snake.transform.position, snakeTargetList[i].position) < shortestDistance)
-            {
-                targetIndex = i;
-            }
-        }
-        snake.SetTarget(snakeTargetList[targetIndex]);
-    }
-    */
-
     public void SnakeCollectStop(Stop stop)
     {
         activeStopList.Remove(stop);
         stopList.Remove(stop);
         Destroy(stop.gameObject);
         stopCount--;
-        //SnakeRetarget();
     }
 
     private void OnDrawGizmosSelected()
