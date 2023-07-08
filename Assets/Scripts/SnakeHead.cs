@@ -9,10 +9,6 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private float turnSmoothTime;
     [SerializeField] private float accel;
 
-    [Header("Colliding")]
-    [SerializeField] private float stopMoveDelay;
-    [SerializeField] private float destroyMoveDelay;
-
     [Header("Snake")]
     [SerializeField] [Range(1, 10)] private int startLength;
     [SerializeField] private float followDelay;
@@ -28,8 +24,6 @@ public class SnakeHead : MonoBehaviour
     private Transform target;
     private float targetRotationY;
     private float rotationVelocity;
-    private float moveDelay;
-    private bool segmentMovementStopped;
     private float currentSpeed;
 
     private void Start()
@@ -45,32 +39,14 @@ public class SnakeHead : MonoBehaviour
         }
 
         target = player.transform;
-        DisableSegmentMovement(false);
     }
 
     private void Update()
     {
-        moveDelay = Mathf.Max(moveDelay -= Time.deltaTime, 0);
-        if (moveDelay == 0)
-        {
-            Vector3 targetDirection = -(transform.position - target.position).normalized;
-            targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
-            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
-
-            currentSpeed = Mathf.MoveTowards(currentSpeed, moveSpeed, accel * Time.deltaTime);
-            if (segmentMovementStopped && currentSpeed > 1f)
-            {
-                DisableSegmentMovement(false);
-            }
-        }
-        else
-        {
-            currentSpeed = Mathf.MoveTowards(currentSpeed, 0, accel * Time.deltaTime);
-            if (!segmentMovementStopped && currentSpeed < 1f)
-            {
-                DisableSegmentMovement(true);
-            }
-        }
+        Vector3 targetDirection = -(transform.position - target.position).normalized;
+        targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
+        transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
+        currentSpeed = Mathf.MoveTowards(currentSpeed, moveSpeed, accel * Time.deltaTime);
     }
 
     private void FixedUpdate()
@@ -97,21 +73,10 @@ public class SnakeHead : MonoBehaviour
         {
             manager.SnakeCollectStop(stop);
             AddSegment();
-            moveDelay = stopMoveDelay;
         }
         else if (other.gameObject.TryGetComponent<Destroyable>(out Destroyable destroyObject))
         {
             destroyObject.DestroyProp();
-            moveDelay = destroyMoveDelay;
-        }
-    }
-
-    private void DisableSegmentMovement(bool disable)
-    {
-        segmentMovementStopped = disable;
-        foreach (SnakeSegment segment in segmentList)
-        {
-            segment.movementStopped = disable;
         }
     }
 }
