@@ -85,4 +85,30 @@ public class Player : MonoBehaviour
     {
         rb.velocity = new Vector3(moveDir.x * Time.deltaTime, rb.velocity.y, moveDir.y * Time.deltaTime);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.TryGetComponent(out SnakeSegment segment))
+        {
+            SnakeCollision();
+        }
+        else if (other.gameObject.TryGetComponent(out Coin coin))
+        {
+            coin.Collect();
+            jumps++;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.TryGetComponent(out SnakeSegment segment))
+        {
+            SnakeCollision();
+        }
+    }
+
+    private void SnakeCollision()
+    {
+        Destroy(gameObject);
+    }
 }

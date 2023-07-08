@@ -69,14 +69,23 @@ public class SnakeHead : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent<Stop>(out Stop stop))
+        if (other.gameObject.TryGetComponent(out SnakeSegment segment) && segment.CanSelfCollide())
+        {
+            DestroySnake();
+        }
+        else if (other.gameObject.TryGetComponent(out Stop stop))
         {
             manager.SnakeCollectStop(stop);
             AddSegment();
         }
-        else if (other.gameObject.TryGetComponent<Destroyable>(out Destroyable destroyObject))
+        else if (other.gameObject.TryGetComponent(out Destroyable destroyObject))
         {
-            destroyObject.DestroyProp();
+            manager.SnakeDestroyProp(destroyObject);
         }
+    }
+
+    private void DestroySnake()
+    {
+        Destroy(transform.parent.gameObject);
     }
 }

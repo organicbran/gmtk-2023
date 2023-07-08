@@ -7,6 +7,7 @@ public class SnakeSegment : MonoBehaviour
     private SnakeSegment segmentParent;
     private float followDelay;
     private List<Guide> guideList = new List<Guide>();
+    private bool canSelfCollide;
 
     public class Guide
     {
@@ -20,12 +21,22 @@ public class SnakeSegment : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        canSelfCollide = false;
+    }
+
     private void Update()
     {
         if (segmentParent != null)
         {
             transform.position = segmentParent.GetGuidePosition();
             transform.rotation = segmentParent.GetGuideRotation();
+        }
+
+        if (!canSelfCollide && guideList.Count >= Mathf.RoundToInt(followDelay * 60))
+        {
+            canSelfCollide = true;
         }
     }
 
@@ -56,5 +67,15 @@ public class SnakeSegment : MonoBehaviour
     public void SetFollowDelay(float delay)
     {
         followDelay = delay;
+    }
+
+    public bool IsSegmentParentNotNull()
+    {
+        return segmentParent != null;
+    }
+
+    public bool CanSelfCollide()
+    {
+        return canSelfCollide;
     }
 }

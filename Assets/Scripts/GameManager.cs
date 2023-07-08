@@ -11,12 +11,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2 stopSpawnRangeZ;
 
     [Header("Pickups")]
+    [SerializeField] private float coinChanceDestroyedProp;
 
     [Header("References")]
     [SerializeField] private Player player;
     [SerializeField] private Transform world;
     [SerializeField] private GameObject stopPrefab;
     [SerializeField] private LayerMask stopLayer;
+    [SerializeField] private GameObject coinPrefab;
 
     private int fixedUpdateCount;
 
@@ -68,6 +70,16 @@ public class GameManager : MonoBehaviour
         stopList.Remove(stop);
         Destroy(stop.gameObject);
         stopCount--;
+    }
+
+    public void SnakeDestroyProp(Destroyable destroyedObject)
+    {
+        if (Random.Range(0f, 1f) <= coinChanceDestroyedProp)
+        {
+            Coin coin = Instantiate(coinPrefab, world).GetComponent<Coin>();
+            coin.transform.localPosition = destroyedObject.transform.localPosition;
+        }
+        destroyedObject.DestroyProp();
     }
 
     private void OnDrawGizmosSelected()

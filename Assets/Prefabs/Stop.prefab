@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 232850714863481712}
   - component: {fileID: 6490078210299132453}
   - component: {fileID: 7309281178380276227}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Stop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -67,7 +67,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1.25
-  m_Height: 3
+  m_Height: 20
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9079334622770824620

@@ -321,13 +321,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e2560c7bba16064a9e8b6f103d9e32c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 450
-  turnSmoothTime: 0.05
-  accel: 1500
-  stopMoveDelay: 1
-  destroyMoveDelay: 0.5
+  moveSpeed: 390
+  turnSmoothTime: 0.1
+  accel: 600
   startLength: 4
-  followDelay: 0.675
+  followDelay: 0.65
   rb: {fileID: 216675166}
   segmentPrefab: {fileID: 6155829348030966810, guid: 3e89506bee352454d949a2043dd011de,
     type: 3}
@@ -352,8 +350,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.5, y: 2, z: 4}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.5, y: 2, z: 3}
+  m_Center: {x: 0, y: 0, z: 0.5}
 --- !u!54 &216675166
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -393,7 +391,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5eb699b18d86c3498a4b94224044c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementStopped: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -431,8 +428,8 @@ Camera:
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.1764706, g: 0.18431373, b: 0.20000002, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -455,7 +452,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 30
+  field of view: 20
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -480,14 +477,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.2588191, y: -0, z: -0, w: 0.9659258}
-  m_LocalPosition: {x: 0, y: 17, z: -30}
+  m_LocalRotation: {x: 0.30070576, y: 0, z: 0, w: 0.953717}
+  m_LocalPosition: {x: 0, y: 28, z: -40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 35, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,7 +541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c8a8dbd03d42446b73b007c8baed47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smoothTime: 0.1
+  smoothTime: 0.125
   followTransform: {fileID: 573078749}
 --- !u!1 &410087039
 GameObject:
@@ -934,8 +931,8 @@ MonoBehaviour:
   accel: 2300
   turnAccel: 4800
   decel: 2700
-  jumpForce: 22
-  gravity: -45
+  jumpForce: 19
+  gravity: -40
   slideSpeed: 1600
   slideEndSpeed: 700
   slideCooldown: 1.25
@@ -1134,7 +1131,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 666936151}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.25000027, y: -0.25, z: 6}
+  m_LocalPosition: {x: 0, y: -0.25, z: 6}
   m_LocalScale: {x: 2, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1252,8 +1249,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 732925393}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5, y: 1.5, z: 6}
-  m_LocalScale: {x: 5.5, y: 2, z: 1}
+  m_LocalPosition: {x: 2.5, y: 1.5, z: 6}
+  m_LocalScale: {x: 7, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 661231090}
@@ -1537,7 +1534,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 882455126}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.25, y: -0.25, z: 6.0000005}
+  m_LocalPosition: {x: 5, y: -0.25, z: 6.0000005}
   m_LocalScale: {x: 2, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1981,6 +1978,7 @@ MonoBehaviour:
   stopSpawnInterval: {x: 1, y: 3}
   stopSpawnRangeX: {x: -22.5, y: 22.5}
   stopSpawnRangeZ: {x: -22.5, y: 22.5}
+  coinChanceDestroyedProp: 0.5
   player: {fileID: 573078751}
   world: {fileID: 661231090}
   stopPrefab: {fileID: 8727019882199289791, guid: 5b5192c85c72e854a905b8ec630cf59a,
@@ -1988,6 +1986,8 @@ MonoBehaviour:
   stopLayer:
     serializedVersion: 2
     m_Bits: 64
+  coinPrefab: {fileID: 7484664160135289596, guid: 4dfe81fe4dbb1af48bb5519dc7125e24,
+    type: 3}
 --- !u!1 &1365699302
 GameObject:
   m_ObjectHideFlags: 0
