@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 232850714863481712}
   - component: {fileID: 6490078210299132453}
   - component: {fileID: 7309281178380276227}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Stop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   model: {fileID: 9079334622770824620}
-  activated: 0
 --- !u!136 &7309281178380276227
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -63,7 +62,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2

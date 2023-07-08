@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2 stopSpawnRangeX;
     [SerializeField] private Vector2 stopSpawnRangeZ;
 
-    [Header("Coins")]
+    [Header("Pickups")]
 
     [Header("References")]
     [SerializeField] private Player player;

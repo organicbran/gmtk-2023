@@ -7,6 +7,7 @@ public class SnakeSegment : MonoBehaviour
     private SnakeSegment segmentParent;
     private float followDelay;
     private List<Guide> guideList = new List<Guide>();
+    [HideInInspector] public bool movementStopped;
 
     public class Guide
     {
@@ -22,7 +23,7 @@ public class SnakeSegment : MonoBehaviour
 
     private void Update()
     {
-        if (segmentParent != null)
+        if (segmentParent != null && !movementStopped)
         {
             transform.position = segmentParent.GetGuidePosition();
             transform.rotation = segmentParent.GetGuideRotation();
@@ -31,10 +32,13 @@ public class SnakeSegment : MonoBehaviour
 
     private void FixedUpdate()
     {
-        guideList.Insert(0, new Guide(transform.position, transform.rotation));
-        if (guideList.Count > Mathf.RoundToInt(followDelay * 60))
+        if (!movementStopped)
         {
-            guideList.RemoveAt(guideList.Count - 1);
+            guideList.Insert(0, new Guide(transform.position, transform.rotation));
+            if (guideList.Count > Mathf.RoundToInt(followDelay * 60))
+            {
+                guideList.RemoveAt(guideList.Count - 1);
+            }
         }
     }
 

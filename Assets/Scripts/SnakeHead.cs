@@ -7,6 +7,11 @@ public class SnakeHead : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float turnSmoothTime;
+    [SerializeField] private float accel;
+
+    [Header("Colliding")]
+    [SerializeField] private float stopMoveDelay;
+    [SerializeField] private float destroyMoveDelay;
 
     [Header("Snake")]
     [SerializeField] [Range(1, 10)] private int startLength;
@@ -18,18 +23,21 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private GameManager manager;
 
-    private SnakeSegment lastSegment;
+    private List<SnakeSegment> segmentList = new List<SnakeSegment>();
     private int snakeLength;
     private Transform target;
     private float targetRotationY;
     private float rotationVelocity;
+    private float moveDelay;
+    private bool segmentMovementStopped;
+    private float currentSpeed;
 
     private void Start()
     {
         snakeLength = 1;
         // setup head segment component
-        lastSegment = GetComponent<SnakeSegment>();
-        lastSegment.SetFollowDelay(followDelay);
+        segmentList.Add(GetComponent<SnakeSegment>());
+        segmentList[0].SetFollowDelay(followDelay);
 
         for (int i = 0; i < startLength - 1; i++)
         {
@@ -37,29 +45,48 @@ public class SnakeHead : MonoBehaviour
         }
 
         target = player.transform;
+        DisableSegmentMovement(false);
     }
 
     private void Update()
     {
-        Vector3 targetDirection = -(transform.position - target.position).normalized;
-        targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
-        transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
+        moveDelay = Mathf.Max(moveDelay -= Time.deltaTime, 0);
+        if (moveDelay == 0)
+        {
+            Vector3 targetDirection = -(transform.position - target.position).normalized;
+            targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
+            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
+
+            currentSpeed = Mathf.MoveTowards(currentSpeed, moveSpeed, accel * Time.deltaTime);
+            if (segmentMovementStopped && currentSpeed > 1f)
+            {
+                DisableSegmentMovement(false);
+            }
+        }
+        else
+        {
+            currentSpeed = Mathf.MoveTowards(currentSpeed, 0, accel * Time.deltaTime);
+            if (!segmentMovementStopped && currentSpeed < 1f)
+            {
+                DisableSegmentMovement(true);
+            }
+        }
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = transform.forward * moveSpeed * Time.deltaTime;
+        rb.velocity = transform.forward * currentSpeed * Time.deltaTime;
     }
 
     private void AddSegment()
     {
         SnakeSegment segment = Instantiate(segmentPrefab, transform.parent).GetComponent<SnakeSegment>();
-        segment.SetSegmentParent(lastSegment);
+        segment.SetSegmentParent(segmentList[segmentList.Count - 1]);
         segment.SetFollowDelay(followDelay);
-        lastSegment = segment;
+        segmentList.Add(segment);
 
-        segment.transform.position = lastSegment.transform.position;
-        segment.transform.rotation = lastSegment.transform.rotation;
+        segment.transform.position = segmentList[segmentList.Count - 1].transform.position;
+        segment.transform.rotation = segmentList[segmentList.Count - 1].transform.rotation;
 
         snakeLength++;
     }
@@ -70,6 +97,21 @@ public class SnakeHead : MonoBehaviour
         {
             manager.SnakeCollectStop(stop);
             AddSegment();
+            moveDelay = stopMoveDelay;
+        }
+        else if (other.gameObject.TryGetComponent<Destroyable>(out Destroyable destroyObject))
+        {
+            destroyObject.DestroyProp();
+            moveDelay = destroyMoveDelay;
+        }
+    }
+
+    private void DisableSegmentMovement(bool disable)
+    {
+        segmentMovementStopped = disable;
+        foreach (SnakeSegment segment in segmentList)
+        {
+            segment.movementStopped = disable;
         }
     }
 }
