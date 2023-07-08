@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
@@ -15,12 +16,19 @@ public class Player : MonoBehaviour
     [SerializeField] private float slideEndSpeed;
     [SerializeField] private float slideCooldown;
 
+    [Header("Machine")]
+    [SerializeField] private int machineCoinCost;
+    [SerializeField] private float machineInteractRadius;
+    
     [Header("References")]
     [SerializeField] private Rigidbody rb;
     [SerializeField] private CapsuleCollider hitbox;
+    [SerializeField] private LayerMask machineLayer;
+    [SerializeField] private TMP_Text coinCountText;
 
     private Vector2 inputDir;
     private Vector2 moveDir;
+    private int coins;
     private int jumps;
     private bool sliding;
     private float slideCooldownTimer;
@@ -28,8 +36,11 @@ public class Player : MonoBehaviour
     private void Start()
     {
         Physics.gravity = Vector3.up * gravity;
+        coins = 0;
         jumps = 0;
         slideCooldownTimer = 0;
+
+        coinCountText.text = coins + " COINS";
     }
 
     private void Update()
@@ -73,11 +84,21 @@ public class Player : MonoBehaviour
             hitbox.height = 2;
         }
 
-        // jumping
-        if (Input.GetButtonDown("Jump") && jumps > 0)
+        if (Input.GetButtonDown("Jump"))
         {
-            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
-            jumps--;
+            // jumping
+            if (jumps > 0)
+            {
+                rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+                jumps--;
+            }
+            // detect machine
+            else if (Physics.CheckSphere(transform.position, machineInteractRadius, machineLayer) && coins >= machineCoinCost)
+            {
+                coins -= machineCoinCost;
+                jumps++;
+                coinCountText.text = coins + " COINS";
+            }
         }
     }
 
@@ -95,7 +116,8 @@ public class Player : MonoBehaviour
         else if (other.gameObject.TryGetComponent(out Coin coin))
         {
             coin.Collect();
-            jumps++;
+            coins++;
+            coinCountText.text = coins + " COINS";
         }
     }
 
@@ -110,5 +132,11 @@ public class Player : MonoBehaviour
     private void SnakeCollision()
     {
         Destroy(gameObject);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, machineInteractRadius);
     }
 }

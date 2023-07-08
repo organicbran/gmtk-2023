@@ -20,8 +20,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private LayerMask stopLayer;
     [SerializeField] private GameObject coinPrefab;
 
-    private int fixedUpdateCount;
-
     private List<Stop> stopList = new List<Stop>();
     private int stopCount;
     private float stopSpawnTimer;
@@ -55,16 +53,6 @@ public class GameManager : MonoBehaviour
         stopSpawnTimer = Random.Range(stopSpawnInterval.x, stopSpawnInterval.y);
     }
 
-    private void FixedUpdate()
-    {
-        fixedUpdateCount++;
-        // every 20 "frames"
-        if (fixedUpdateCount % 20 == 0)
-        {
-
-        }
-    }
-
     public void SnakeCollectStop(Stop stop)
     {
         stopList.Remove(stop);
@@ -80,10 +68,5 @@ public class GameManager : MonoBehaviour
             coin.transform.localPosition = destroyedObject.transform.localPosition;
         }
         destroyedObject.DestroyProp();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.blue;
     }
 }

@@ -6,8 +6,10 @@ public class SnakeSegment : MonoBehaviour
 {
     private SnakeSegment segmentParent;
     private float followDelay;
+    private int fixedUpdateSaveInterval;
     private List<Guide> guideList = new List<Guide>();
     private bool canSelfCollide;
+    private int fixedUpdateCount;
 
     public class Guide
     {
@@ -28,25 +30,30 @@ public class SnakeSegment : MonoBehaviour
 
     private void Update()
     {
-        if (segmentParent != null)
+        if (!canSelfCollide && guideList.Count >= Mathf.FloorToInt(followDelay * (60 / fixedUpdateSaveInterval)))
+        {
+            canSelfCollide = true;
+        }
+
+        if (segmentParent != null && canSelfCollide)
         {
             transform.position = segmentParent.GetGuidePosition();
             transform.rotation = segmentParent.GetGuideRotation();
-        }
-
-        if (!canSelfCollide && guideList.Count >= Mathf.RoundToInt(followDelay * 60))
-        {
-            canSelfCollide = true;
         }
     }
 
     private void FixedUpdate()
     {
-        guideList.Insert(0, new Guide(transform.position, transform.rotation));
-        if (guideList.Count > Mathf.RoundToInt(followDelay * 60))
+        fixedUpdateCount++;
+        // every 2 "frames"
+        if (fixedUpdateCount % fixedUpdateSaveInterval == 0)
         {
-            guideList.RemoveAt(guideList.Count - 1);
-        }
+            guideList.Insert(0, new Guide(transform.position, transform.rotation));
+            if (guideList.Count > Mathf.FloorToInt(followDelay * (60 / fixedUpdateSaveInterval)))
+            {
+                guideList.RemoveAt(guideList.Count - 1);
+            }
+        }  
     }
 
     public Vector3 GetGuidePosition()
@@ -67,6 +74,11 @@ public class SnakeSegment : MonoBehaviour
     public void SetFollowDelay(float delay)
     {
         followDelay = delay;
+    }
+
+    public void SetSaveInterval(int interval)
+    {
+        fixedUpdateSaveInterval = interval;
     }
 
     public bool IsSegmentParentNotNull()

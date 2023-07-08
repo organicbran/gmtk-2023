@@ -5,13 +5,17 @@ using UnityEngine;
 public class SnakeHead : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float moveSpeed;
+    [SerializeField] private float moveSpeedMin;
+    [SerializeField] private float moveSpeedMax;
+    [SerializeField] private float playerCloseDistance;
+    [SerializeField] private float playerFarDistance;
     [SerializeField] private float turnSmoothTime;
     [SerializeField] private float accel;
 
     [Header("Snake")]
     [SerializeField] [Range(1, 10)] private int startLength;
     [SerializeField] private float followDelay;
+    [SerializeField] private int fixedUpdateSaveInterval;
 
     [Header("References")]
     [SerializeField] private Rigidbody rb;
@@ -32,6 +36,7 @@ public class SnakeHead : MonoBehaviour
         // setup head segment component
         segmentList.Add(GetComponent<SnakeSegment>());
         segmentList[0].SetFollowDelay(followDelay);
+        segmentList[0].SetSaveInterval(fixedUpdateSaveInterval);
 
         for (int i = 0; i < startLength - 1; i++)
         {
@@ -46,6 +51,12 @@ public class SnakeHead : MonoBehaviour
         Vector3 targetDirection = -(transform.position - target.position).normalized;
         targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
         transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
+
+        float playerDistance = Vector3.Distance(transform.position, player.transform.position);
+        playerDistance = Mathf.Clamp(playerDistance, playerCloseDistance, playerFarDistance);
+        playerDistance = (playerDistance - playerCloseDistance) / (playerFarDistance - playerCloseDistance);
+        float moveSpeed = moveSpeedMin + playerDistance * (moveSpeedMax - moveSpeedMin);
+        Debug.Log(moveSpeed);
         currentSpeed = Mathf.MoveTowards(currentSpeed, moveSpeed, accel * Time.deltaTime);
     }
 
@@ -59,6 +70,7 @@ public class SnakeHead : MonoBehaviour
         SnakeSegment segment = Instantiate(segmentPrefab, transform.parent).GetComponent<SnakeSegment>();
         segment.SetSegmentParent(segmentList[segmentList.Count - 1]);
         segment.SetFollowDelay(followDelay);
+        segment.SetSaveInterval(fixedUpdateSaveInterval);
         segmentList.Add(segment);
 
         segment.transform.position = segmentList[segmentList.Count - 1].transform.position;
