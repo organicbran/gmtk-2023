@@ -6,7 +6,6 @@ public class SnakeHead : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
-    [SerializeField] private float turnSpeed;
     [SerializeField] private float turnSmoothTime;
 
     [Header("Snake")]
@@ -42,13 +41,8 @@ public class SnakeHead : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            AddSegment();
-        }
-
         Vector3 targetDirection = -(transform.position - target.position).normalized;
-        targetRotationY = (Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(targetDirection), turnSpeed * Time.deltaTime)).eulerAngles.y;
+        targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
         transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
     }
 

@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2 stopSpawnRangeZ;
     [SerializeField] private float stopActivateRadius;
 
+    [Header("Coins")]
+
     [Header("References")]
     [SerializeField] private Player player;
     [SerializeField] private Transform world;
