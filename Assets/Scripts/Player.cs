@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Settings")]
+    [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float accel;
     [SerializeField] private float turnAccel;
@@ -38,8 +38,6 @@ public class Player : MonoBehaviour
             // decelerating
             moveDir = Vector2.MoveTowards(moveDir, Vector2.zero, decel * Time.deltaTime);
         }
-
-        Debug.Log(moveDir);
     }
 
     private void FixedUpdate()
