@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2 stopSpawnInterval;
     [SerializeField] private Vector2 stopSpawnRangeX;
     [SerializeField] private Vector2 stopSpawnRangeZ;
-    [SerializeField] private float stopActivateRadius;
 
     [Header("Coins")]
 
@@ -22,20 +21,19 @@ public class GameManager : MonoBehaviour
     private int fixedUpdateCount;
 
     private List<Stop> stopList = new List<Stop>();
-    private List<Stop> activeStopList = new List<Stop>();
     private int stopCount;
     private float stopSpawnTimer;
 
     private void Start()
     {
         ResetStopSpawnTimer();
-        ActivateStops();
     }
 
     private void Update()
     {
         if (stopCount < maxStops)
         {
+            // spawn stops
             stopSpawnTimer = Mathf.Max(stopSpawnTimer - Time.deltaTime, 0);
             if (stopSpawnTimer == 0)
             {
@@ -61,31 +59,12 @@ public class GameManager : MonoBehaviour
         // every 20 "frames"
         if (fixedUpdateCount % 20 == 0)
         {
-            ActivateStops();
-        }
-    }
 
-    private void ActivateStops()
-    {
-        foreach (Stop stop in stopList)
-        {
-            stop.Activate(false);
-        }
-
-        // check which stops are near the player
-        activeStopList.Clear();
-        Collider[] hitStops = Physics.OverlapSphere(player.transform.position, stopActivateRadius, stopLayer);
-        foreach (Collider hitStop in hitStops)
-        {
-            Stop stop = hitStop.GetComponent<Stop>();
-            stop.Activate(true);
-            activeStopList.Add(stop);
         }
     }
 
     public void SnakeCollectStop(Stop stop)
     {
-        activeStopList.Remove(stop);
         stopList.Remove(stop);
         Destroy(stop.gameObject);
         stopCount--;
@@ -94,6 +73,5 @@ public class GameManager : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(player.transform.position, stopActivateRadius);
     }
 }

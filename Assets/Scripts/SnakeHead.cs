@@ -68,11 +68,8 @@ public class SnakeHead : MonoBehaviour
     {
         if (other.gameObject.TryGetComponent<Stop>(out Stop stop))
         {
-            if (stop.activated)
-            {
-                manager.SnakeCollectStop(stop);
-                AddSegment();
-            }
+            manager.SnakeCollectStop(stop);
+            AddSegment();
         }
     }
 }
