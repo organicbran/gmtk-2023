@@ -7,24 +7,27 @@ public class SnakeHead : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float turnSpeed;
-    [SerializeField] private float turnAccel;
+    [SerializeField] private float turnSmoothTime;
 
     [Header("Snake")]
     [SerializeField] [Range(1, 10)] private int startLength;
     [SerializeField] private float followDelay;
 
     [Header("References")]
-    [SerializeField] private Player player;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private GameObject segmentPrefab;
+    [SerializeField] private Player player;
+    [SerializeField] private GameManager manager;
 
     private SnakeSegment lastSegment;
     private int snakeLength;
+    private Transform target;
+    private float targetRotationY;
+    private float rotationVelocity;
 
     private void Start()
     {
         snakeLength = 1;
-
         // setup head segment component
         lastSegment = GetComponent<SnakeSegment>();
         lastSegment.SetFollowDelay(followDelay);
@@ -33,6 +36,8 @@ public class SnakeHead : MonoBehaviour
         {
             AddSegment();
         }
+
+        target = player.transform;
     }
 
     private void Update()
@@ -42,16 +47,9 @@ public class SnakeHead : MonoBehaviour
             AddSegment();
         }
 
-        Vector3 playerDirection = -(transform.position - player.transform.position).normalized;
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(playerDirection), turnSpeed * Time.deltaTime);
-
-        //float angleToPlayer = Vector3.SignedAngle(transform.position, player.transform.position, Vector3.up);
-        //float direction = Mathf.Sign(angleToPlayer);
-        //transform.localEulerAngles += Vector3.up * turnSpeed * direction * Time.deltaTime;
-
-        //transform.localEulerAngles = Vector3.up * Mathf.MoveTowardsAngle(transform.localEulerAngles.y, angleToPlayer, turnSpeed * Time.deltaTime);
-
-        //Debug.Log(angleToPlayer);
+        Vector3 targetDirection = -(transform.position - target.position).normalized;
+        targetRotationY = (Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(targetDirection), turnSpeed * Time.deltaTime)).eulerAngles.y;
+        transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
     }
 
     private void FixedUpdate()
@@ -70,5 +68,17 @@ public class SnakeHead : MonoBehaviour
         segment.transform.rotation = lastSegment.transform.rotation;
 
         snakeLength++;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.TryGetComponent<Stop>(out Stop stop))
+        {
+            if (stop.activated)
+            {
+                manager.SnakeCollectStop(stop);
+                AddSegment();
+            }
+        }
     }
 }

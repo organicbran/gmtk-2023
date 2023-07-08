@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float accel;
     [SerializeField] private float turnAccel;
     [SerializeField] private float decel;
+    [SerializeField] private float dashSpeed;
 
     [Header("References")]
     [SerializeField] private Rigidbody rb;
@@ -37,6 +38,12 @@ public class Player : MonoBehaviour
         {
             // decelerating
             moveDir = Vector2.MoveTowards(moveDir, Vector2.zero, decel * Time.deltaTime);
+        }
+
+        // dashing
+        if (Input.GetButtonDown("Jump"))
+        {
+            moveDir = inputDir * dashSpeed;
         }
     }
 
