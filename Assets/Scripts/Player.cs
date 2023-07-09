@@ -12,9 +12,6 @@ public class Player : MonoBehaviour
     [SerializeField] private float decel;
     [SerializeField] private float jumpForce;
     [SerializeField] private float gravity;
-    //[SerializeField] private float slideSpeed;
-    //[SerializeField] private float slideEndSpeed;
-    //[SerializeField] private float slideCooldown;
 
     [Header("Machine")]
     [SerializeField] private int machineCoinCost;
@@ -33,15 +30,12 @@ public class Player : MonoBehaviour
     private Vector2 moveDir;
     private int coins;
     private bool canJump;
-    //private bool sliding;
-    //private float slideCooldownTimer;
 
     private void Start()
     {
         Physics.gravity = Vector3.up * gravity;
         coins = 0;
         canJump = false;
-        //slideCooldownTimer = 0;
 
         coinCountText.text = coins + " COINS";
 
@@ -73,26 +67,6 @@ public class Player : MonoBehaviour
             // decelerating
             moveDir = Vector2.MoveTowards(moveDir, Vector2.zero, decel * Time.deltaTime);
         }
-
-        /*
-        // sliding
-        slideCooldownTimer = Mathf.Max(slideCooldownTimer - Time.deltaTime, 0);
-
-        if (Input.GetButtonDown("Slide") && slideCooldownTimer == 0)
-        {
-            moveDir = inputDir * slideSpeed;
-            hitbox.height = 1;
-            transform.position -= Vector3.up * 0.5f;
-            slideCooldownTimer = slideCooldown;
-            sliding = true;
-        }
-
-        if (sliding && moveDir.magnitude < slideEndSpeed)
-        {
-            sliding = false;
-            hitbox.height = 2;
-        }
-        */
 
         if (Input.GetButtonDown("Jump"))
         {
