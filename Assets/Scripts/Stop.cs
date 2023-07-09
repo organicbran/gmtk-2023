@@ -4,10 +4,5 @@ using UnityEngine;
 
 public class Stop : MonoBehaviour
 {
-    [SerializeField] private GameObject model;
 
-    private void Start()
-    {
-
-    }
 }

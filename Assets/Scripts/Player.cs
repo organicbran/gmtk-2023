@@ -14,10 +14,10 @@ public class Player : MonoBehaviour
     [SerializeField] private float gravity;
 
     [Header("Machine")]
-    [SerializeField] private int machineCoinCost;
     [SerializeField] private float machineInteractRadius;
-    
+
     [Header("References")]
+    [SerializeField] private GameManager manager;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private CapsuleCollider hitbox;
     [SerializeField] private LayerMask machineLayer;
@@ -25,24 +25,38 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject modelObject;
     [SerializeField] private Animator animator;
     [SerializeField] private ParticleSystem[] jumpReadyParticles;
+    [SerializeField] private GameObject jumpGuide;
+    [SerializeField] private float jumpGuideDuration;
+    [SerializeField] private AudioSource coinSound;
+    [SerializeField] private AudioSource spendSound;
+    [SerializeField] private AudioSource brokeSound;
+    [SerializeField] private AudioSource jumpSound;
 
     private Vector2 inputDir;
     private Vector2 moveDir;
     private int coins;
     private bool canJump;
+    private float jumpGuideTimer;
+    private bool jumpGuideOn;
+    private int machineCoinCost;
 
     private void Start()
     {
+        manager = GameObject.Find("Manager").GetComponent<GameManager>();
+
         Physics.gravity = Vector3.up * gravity;
         coins = 0;
         canJump = false;
 
-        coinCountText.text = coins + " COINS";
+        coinCountText.text = coins + "";
 
         foreach (ParticleSystem particle in jumpReadyParticles)
         {
             particle.Stop();
         }
+
+        jumpGuide.SetActive(false);
+        jumpGuideOn = false;
     }
 
     private void Update()
@@ -81,18 +95,27 @@ public class Player : MonoBehaviour
                 {
                     particle.Stop();
                 }
+                jumpGuide.SetActive(true);
+                jumpGuideOn = true;
+                jumpSound.Play();
             }
             // detect machine
             else if (Physics.CheckSphere(transform.position, machineInteractRadius, machineLayer) && coins >= machineCoinCost)
             {
                 coins -= machineCoinCost;
                 canJump = true;
-                coinCountText.text = coins + " COINS";
+                coinCountText.text = coins + "";
 
                 foreach (ParticleSystem particle in jumpReadyParticles)
                 {
                     particle.Play();
                 }
+
+                spendSound.Play();
+            }
+            else
+            {
+                brokeSound.Play();
             }
         }
 
@@ -102,6 +125,17 @@ public class Player : MonoBehaviour
             modelObject.transform.localEulerAngles = Vector3.up * -1 * Vector2.SignedAngle(Vector2.up, inputDir);
         }
         animator.SetBool("Running", inputDir != Vector2.zero);
+
+        if (jumpGuideOn)
+        {
+            jumpGuideTimer = Mathf.Clamp(jumpGuideTimer + Time.deltaTime, 0, jumpGuideDuration);
+            if (jumpGuideTimer >= jumpGuideDuration)
+            {
+                jumpGuide.SetActive(false);
+                jumpGuideOn = false;
+                jumpGuideTimer = 0;
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -119,7 +153,8 @@ public class Player : MonoBehaviour
         {
             coin.Collect();
             coins++;
-            coinCountText.text = coins + " COINS";
+            coinCountText.text = coins + "";
+            coinSound.Play();
         }
     }
 
@@ -133,6 +168,7 @@ public class Player : MonoBehaviour
 
     private void SnakeCollision()
     {
+        manager.GameOver();
         Destroy(gameObject);
     }
 
@@ -140,5 +176,10 @@ public class Player : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, machineInteractRadius);
+    }
+
+    public void SetCoinCost(int newCost)
+    {
+        machineCoinCost = newCost;
     }
 }

@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class SnakeSegment : MonoBehaviour
 {
-    [SerializeField] private GameObject model;
+    public GameObject model;
     [SerializeField] private Collider hitbox;
     [SerializeField] private float spawnAnimateTime;
+    [SerializeField] private GameObject explodeParticles;
 
     private SnakeSegment segmentParent;
     private float followDelay;
@@ -148,5 +149,11 @@ public class SnakeSegment : MonoBehaviour
     public void Pause(bool pause)
     {
         paused = pause;
+    }
+
+    public void Explode()
+    {
+        Instantiate(explodeParticles, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }

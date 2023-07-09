@@ -659,6 +659,7 @@ GameObject:
   - component: {fileID: 232850714863481712}
   - component: {fileID: 6490078210299132453}
   - component: {fileID: 7309281178380276227}
+  - component: {fileID: 7838177888781131152}
   m_Layer: 11
   m_Name: Stop2
   m_TagString: Untagged
@@ -718,3 +719,18 @@ CapsuleCollider:
   m_Height: 20
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7838177888781131152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8727019882199289791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0c62b29a6ecff47888629696dba6a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationTime: 0.5
+  start: -3
+  height: 2.5

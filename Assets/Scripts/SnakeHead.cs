@@ -25,6 +25,8 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private float bounceInterval;
     [SerializeField] private float bounceSegmentDelay;
     [SerializeField] private float bounceHeight;
+    [SerializeField] private ParticleSystem propParticles;
+    [SerializeField] private float explodeInterval;
 
     [Header("References")]
     [SerializeField] private Rigidbody rb;
@@ -32,6 +34,10 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private GameManager manager;
     [SerializeField] private GameObject trailObject;
+    [SerializeField] private AudioSource propSound;
+    [SerializeField] private AudioSource stopSound;
+    [SerializeField] private AudioSource crashSound;
+    [SerializeField] private AudioSource explodeSound;
 
     private List<SnakeSegment> segmentList = new List<SnakeSegment>();
     private Transform target;
@@ -55,23 +61,32 @@ public class SnakeHead : MonoBehaviour
 
         StartCoroutine(InitialSpawn());
 
-        target = player.transform;
+        target = transform.parent;
 
         trails = trailObject.GetComponentsInChildren<TrailRenderer>();
+        propParticles.Stop(true);
     }
 
     private void Update()
     {
-        Vector3 targetDirection = -(transform.position - target.position).normalized;
-        targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
-        if (pauseTimer == 0)
-            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
+        if (target == transform.parent && transform.localPosition.x <= 12f)
+        {
+            target = player.transform;
+        }
 
-        float playerDistance = Vector3.Distance(transform.position, player.transform.position);
-        playerDistance = Mathf.Clamp(playerDistance, playerCloseDistance, playerFarDistance);
-        playerDistance = (playerDistance - playerCloseDistance) / (playerFarDistance - playerCloseDistance);
-        float moveSpeed = moveSpeedMin + playerDistance * (moveSpeedMax - moveSpeedMin);
-        currentSpeed = Mathf.MoveTowards(currentSpeed, moveSpeed, accel * Time.deltaTime);
+        if (target != null)
+        {
+            Vector3 targetDirection = -(transform.position - target.position).normalized;
+            targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
+            if (pauseTimer == 0)
+                transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
+
+            float playerDistance = Vector3.Distance(transform.position, player.transform.position);
+            playerDistance = Mathf.Clamp(playerDistance, playerCloseDistance, playerFarDistance);
+            playerDistance = (playerDistance - playerCloseDistance) / (playerFarDistance - playerCloseDistance);
+            float moveSpeed = moveSpeedMin + playerDistance * (moveSpeedMax - moveSpeedMin);
+            currentSpeed = Mathf.MoveTowards(currentSpeed, moveSpeed, accel * Time.deltaTime);
+        }
 
         if (pauseTimer > 0)
         {
@@ -90,7 +105,7 @@ public class SnakeHead : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (pauseTimer == 0)
+        if (pauseTimer == 0 && target != null)
         {
             rb.velocity = transform.forward * currentSpeed * Time.deltaTime;
         }
@@ -125,9 +140,13 @@ public class SnakeHead : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent(out SnakeSegment segment) && segment.CanSelfCollide())
+        if (target != null && other.gameObject.TryGetComponent(out SnakeSegment segment) && segment.CanSelfCollide())
         {
-            DestroySnake();
+            StartCoroutine(DestroySnake());
+            PauseSnake(true);
+            pauseTimer = Mathf.Infinity;
+            manager.TrainCrashed(segmentList.Count);
+            crashSound.Play();
         }
         else if (other.gameObject.TryGetComponent(out Stop stop))
         {
@@ -136,6 +155,7 @@ public class SnakeHead : MonoBehaviour
 
             PauseSnake(true);
             pauseTimer = stopPauseLength;
+            stopSound.Play();
         }
         else if (other.gameObject.TryGetComponent(out Destroyable destroyObject))
         {
@@ -143,12 +163,22 @@ public class SnakeHead : MonoBehaviour
 
             PauseSnake(true);
             pauseTimer = crashPauseLength;
+
+            propParticles.Play(true);
+            propSound.Play();
         }
     }
 
-    private void DestroySnake()
+    private IEnumerator DestroySnake()
     {
-        Destroy(transform.parent.gameObject);
+        for (int i = segmentList.Count - 1; i >= 0; i--)
+        {
+            yield return new WaitForSeconds(explodeInterval);
+            explodeSound.Play();
+            segmentList[i].Explode();
+            if (i == 0)
+                Destroy(gameObject);
+        }
     }
 
     private IEnumerator AnimateBounce()
@@ -173,16 +203,31 @@ public class SnakeHead : MonoBehaviour
 
     private void PauseSnake(bool pause)
     {
-        /*
-        if (pause)
-        {
-            animateIntervalTimer = 0;
-        }
-        */
-            
         foreach (SnakeSegment segment in segmentList)
         {
             segment.Pause(pause);
         }
+    }
+
+    public Transform GetHeadModel()
+    {
+        return segmentList[0].model.transform;
+    }
+
+    public Transform GameOver()
+    {
+        PauseSnake(true);
+        pauseTimer = Mathf.Infinity;
+        AddSegment();
+        return segmentList[segmentList.Count - 1].transform;
+    }
+
+    public void Setup(Player player, GameManager manager, int length, int speedAdd)
+    {
+        this.player = player;
+        this.manager = manager;
+        this.startLength = length;
+        moveSpeedMin += speedAdd;
+        moveSpeedMax += speedAdd;
     }
 }

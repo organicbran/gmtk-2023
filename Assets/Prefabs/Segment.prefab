@@ -49,6 +49,8 @@ MonoBehaviour:
   model: {fileID: 5792898879208746203}
   hitbox: {fileID: 2941302511590184348}
   spawnAnimateTime: 0.65
+  explodeParticles: {fileID: 914881786549233829, guid: 573e5350f50a82f4ca023083ebeae379,
+    type: 3}
 --- !u!136 &2941302511590184348
 CapsuleCollider:
   m_ObjectHideFlags: 0

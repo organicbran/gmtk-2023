@@ -217,6 +217,7 @@ GameObject:
   m_Component:
   - component: {fileID: 313357114846144609}
   - component: {fileID: 8306733739554004058}
+  - component: {fileID: 5497765007365340572}
   - component: {fileID: 757441419068065804}
   - component: {fileID: 102064696223035464}
   - component: {fileID: 89958955175874703}
@@ -242,7 +243,7 @@ Transform:
   m_Children:
   - {fileID: 4410831019615169027}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8306733739554004058
 MonoBehaviour:
@@ -256,6 +257,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00fb726131d24044bb03ed7f09171437, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5497765007365340572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7484664160135289596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0c62b29a6ecff47888629696dba6a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationTime: 0.5
+  start: -2
+  height: 2.5
 --- !u!136 &757441419068065804
 CapsuleCollider:
   m_ObjectHideFlags: 0
