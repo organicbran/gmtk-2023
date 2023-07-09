@@ -12,9 +12,9 @@ public class Player : MonoBehaviour
     [SerializeField] private float decel;
     [SerializeField] private float jumpForce;
     [SerializeField] private float gravity;
-    [SerializeField] private float slideSpeed;
-    [SerializeField] private float slideEndSpeed;
-    [SerializeField] private float slideCooldown;
+    //[SerializeField] private float slideSpeed;
+    //[SerializeField] private float slideEndSpeed;
+    //[SerializeField] private float slideCooldown;
 
     [Header("Machine")]
     [SerializeField] private int machineCoinCost;
@@ -25,22 +25,30 @@ public class Player : MonoBehaviour
     [SerializeField] private CapsuleCollider hitbox;
     [SerializeField] private LayerMask machineLayer;
     [SerializeField] private TMP_Text coinCountText;
+    [SerializeField] private GameObject modelObject;
+    [SerializeField] private Animator animator;
+    [SerializeField] private ParticleSystem[] jumpReadyParticles;
 
     private Vector2 inputDir;
     private Vector2 moveDir;
     private int coins;
-    private int jumps;
-    private bool sliding;
-    private float slideCooldownTimer;
+    private bool canJump;
+    //private bool sliding;
+    //private float slideCooldownTimer;
 
     private void Start()
     {
         Physics.gravity = Vector3.up * gravity;
         coins = 0;
-        jumps = 0;
-        slideCooldownTimer = 0;
+        canJump = false;
+        //slideCooldownTimer = 0;
 
         coinCountText.text = coins + " COINS";
+
+        foreach (ParticleSystem particle in jumpReadyParticles)
+        {
+            particle.Stop();
+        }
     }
 
     private void Update()
@@ -66,6 +74,7 @@ public class Player : MonoBehaviour
             moveDir = Vector2.MoveTowards(moveDir, Vector2.zero, decel * Time.deltaTime);
         }
 
+        /*
         // sliding
         slideCooldownTimer = Mathf.Max(slideCooldownTimer - Time.deltaTime, 0);
 
@@ -83,23 +92,42 @@ public class Player : MonoBehaviour
             sliding = false;
             hitbox.height = 2;
         }
+        */
 
         if (Input.GetButtonDown("Jump"))
         {
             // jumping
-            if (jumps > 0)
+            if (canJump)
             {
                 rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
-                jumps--;
+                canJump = false;
+
+                animator.SetTrigger("Jump");
+                foreach (ParticleSystem particle in jumpReadyParticles)
+                {
+                    particle.Stop();
+                }
             }
             // detect machine
             else if (Physics.CheckSphere(transform.position, machineInteractRadius, machineLayer) && coins >= machineCoinCost)
             {
                 coins -= machineCoinCost;
-                jumps++;
+                canJump = true;
                 coinCountText.text = coins + " COINS";
+
+                foreach (ParticleSystem particle in jumpReadyParticles)
+                {
+                    particle.Play();
+                }
             }
         }
+
+        // player model
+        if (inputDir != Vector2.zero)
+        {
+            modelObject.transform.localEulerAngles = Vector3.up * -1 * Vector2.SignedAngle(Vector2.up, inputDir);
+        }
+        animator.SetBool("Running", inputDir != Vector2.zero);
     }
 
     private void FixedUpdate()

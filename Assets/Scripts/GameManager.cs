@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2 stopSpawnInterval;
     [SerializeField] private Vector2 stopSpawnRangeX;
     [SerializeField] private Vector2 stopSpawnRangeZ;
+    [SerializeField] private float stopSpawnClearanceRadius;
 
     [Header("Pickups")]
     [SerializeField] private float coinChanceDestroyedProp;
@@ -16,9 +17,10 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private Player player;
     [SerializeField] private Transform world;
-    [SerializeField] private GameObject stopPrefab;
+    [SerializeField] private GameObject[] stopPrefabs;
     [SerializeField] private LayerMask stopLayer;
     [SerializeField] private GameObject coinPrefab;
+    [SerializeField] private LayerMask stopSpawnCheckLayer;
 
     private List<Stop> stopList = new List<Stop>();
     private int stopCount;
@@ -37,9 +39,15 @@ public class GameManager : MonoBehaviour
             stopSpawnTimer = Mathf.Max(stopSpawnTimer - Time.deltaTime, 0);
             if (stopSpawnTimer == 0)
             {
-                Vector3 randomPosition = new Vector3(Random.Range(stopSpawnRangeX.x, stopSpawnRangeX.y), 0f, Random.Range(stopSpawnRangeZ.x, stopSpawnRangeZ.y));
+                GameObject stopPrefab = stopPrefabs[Random.Range(0, stopPrefabs.Length)];
                 Stop stop = Instantiate(stopPrefab, world).GetComponent<Stop>();
+                Vector3 randomPosition = new Vector3(Random.Range(stopSpawnRangeX.x, stopSpawnRangeX.y), 0f, Random.Range(stopSpawnRangeZ.x, stopSpawnRangeZ.y));
                 stop.transform.localPosition = randomPosition;
+                while (Physics.CheckSphere(stop.transform.position, stopSpawnClearanceRadius, stopSpawnCheckLayer, QueryTriggerInteraction.Collide))
+                {
+                    randomPosition = new Vector3(Random.Range(stopSpawnRangeX.x, stopSpawnRangeX.y), 0f, Random.Range(stopSpawnRangeZ.x, stopSpawnRangeZ.y));
+                    stop.transform.localPosition = randomPosition;
+                }
 
                 stopList.Add(stop);
                 stopCount++;
