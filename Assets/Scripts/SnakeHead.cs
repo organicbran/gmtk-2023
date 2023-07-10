@@ -74,20 +74,6 @@ public class SnakeHead : MonoBehaviour
             target = player.transform;
         }
 
-        if (target != null)
-        {
-            Vector3 targetDirection = -(transform.position - target.position).normalized;
-            targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
-            if (pauseTimer == 0)
-                transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
-
-            float playerDistance = Vector3.Distance(transform.position, player.transform.position);
-            playerDistance = Mathf.Clamp(playerDistance, playerCloseDistance, playerFarDistance);
-            playerDistance = (playerDistance - playerCloseDistance) / (playerFarDistance - playerCloseDistance);
-            float moveSpeed = moveSpeedMin + playerDistance * (moveSpeedMax - moveSpeedMin);
-            currentSpeed = Mathf.MoveTowards(currentSpeed, moveSpeed, accel * Time.deltaTime);
-        }
-
         if (pauseTimer > 0)
         {
             pauseTimer = Mathf.Max(pauseTimer - Time.deltaTime, 0);
@@ -105,6 +91,21 @@ public class SnakeHead : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // moved from Update, fixes train not turning when under 60 fps issue
+        if (target != null)
+        {
+            Vector3 targetDirection = -(transform.position - target.position).normalized;
+            targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
+            if (pauseTimer == 0)
+                transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
+
+            float playerDistance = Vector3.Distance(transform.position, player.transform.position);
+            playerDistance = Mathf.Clamp(playerDistance, playerCloseDistance, playerFarDistance);
+            playerDistance = (playerDistance - playerCloseDistance) / (playerFarDistance - playerCloseDistance);
+            float moveSpeed = moveSpeedMin + playerDistance * (moveSpeedMax - moveSpeedMin);
+            currentSpeed = Mathf.MoveTowards(currentSpeed, moveSpeed, accel * Time.deltaTime);
+        }
+
         if (pauseTimer == 0 && target != null)
         {
             rb.velocity = transform.forward * currentSpeed * Time.deltaTime;
