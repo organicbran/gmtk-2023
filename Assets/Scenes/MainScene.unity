@@ -10935,7 +10935,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 3
+  m_text: 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8fde3f0a5079e294d854996bce111558, type: 2}
   m_sharedMaterial: {fileID: -4669459195615291678, guid: 8fde3f0a5079e294d854996bce111558,
@@ -12573,6 +12573,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbac01790e5837a4ab196a1682b44ef0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxSpawnAttempts: 10
   maxStops: 8
   stopSpawnInterval: {x: 4, y: 8}
   stopSpawnRangeX: {x: -15, y: 15}

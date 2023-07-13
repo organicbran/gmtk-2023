@@ -7,6 +7,7 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     [Header("Stops")]
+    [SerializeField] private int maxSpawnAttempts;
     [SerializeField] private int maxStops;
     [SerializeField] private Vector2 stopSpawnInterval;
     [SerializeField] private Vector2 stopSpawnRangeX;
@@ -101,47 +102,64 @@ public class GameManager : MonoBehaviour
             stopSpawnTimer = Mathf.Max(stopSpawnTimer - Time.deltaTime, 0);
             if (stopSpawnTimer == 0)
             {
+                int spawnAttempts = 1;
                 GameObject stopPrefab = stopPrefabs[Random.Range(0, stopPrefabs.Length)];
                 Stop stop = Instantiate(stopPrefab, world).GetComponent<Stop>();
                 Vector3 randomPosition = new Vector3(Random.Range(stopSpawnRangeX.x, stopSpawnRangeX.y), 0f, Random.Range(stopSpawnRangeZ.x, stopSpawnRangeZ.y));
                 stop.transform.localPosition = randomPosition;
-                while (Physics.CheckSphere(stop.transform.position, stopSpawnClearanceRadius, stopSpawnCheckLayer, QueryTriggerInteraction.Collide))
+                while (spawnAttempts <= maxSpawnAttempts && Physics.CheckSphere(stop.transform.position, stopSpawnClearanceRadius, stopSpawnCheckLayer, QueryTriggerInteraction.Collide))
                 {
+                    spawnAttempts++;
                     randomPosition = new Vector3(Random.Range(stopSpawnRangeX.x, stopSpawnRangeX.y), 0f, Random.Range(stopSpawnRangeZ.x, stopSpawnRangeZ.y));
                     stop.transform.localPosition = randomPosition;
                 }
 
-                stopList.Add(stop);
-                stopCount++;
+                if (spawnAttempts > maxSpawnAttempts)
+                {
+                    Debug.Log("stop spawn failed");
+                    Destroy(stop.gameObject);
+                }
+                else
+                {
+                    stopList.Add(stop);
+                    stopCount++;
+                    stopSpawnSound.Play();
+                }
                 ResetStopSpawnTimer();
-
-                stopSpawnSound.Play();
             }
         }
 
         if (propCount < maxProps)
         {
+            // spawn props
             propSpawnTimer = Mathf.Max(propSpawnTimer - Time.deltaTime, 0);
             if (propSpawnTimer == 0)
             {
+                int spawnAttempts = 1;
                 GameObject propPrefab = propPrefabs[Random.Range(0, propPrefabs.Length)];
-                GameObject prop = Instantiate(propPrefab, world).gameObject;
+                GameObject prop = Instantiate(propPrefab, world);
                 Vector3 randomPosition = new Vector3(Random.Range(propSpawnRangeX.x, propSpawnRangeX.y), 0f, Random.Range(propSpawnRangeZ.x, propSpawnRangeZ.y));
-                prop.transform.localPosition = randomPosition;
-                while (Physics.CheckSphere(prop.transform.position, propSpawnClearanceRadius, stopSpawnCheckLayer, QueryTriggerInteraction.Collide))
+                prop.transform.localPosition = Vector3Int.RoundToInt(randomPosition);
+                while (spawnAttempts <= maxSpawnAttempts && Physics.CheckSphere(prop.transform.position, propSpawnClearanceRadius, stopSpawnCheckLayer, QueryTriggerInteraction.Collide))
                 {
+                    spawnAttempts++;
                     randomPosition = new Vector3(Random.Range(propSpawnRangeX.x, propSpawnRangeX.y), 0f, Random.Range(propSpawnRangeZ.x, propSpawnRangeZ.y));
-                    prop.transform.localPosition = randomPosition;
+                    prop.transform.localPosition = Vector3Int.RoundToInt(randomPosition);
                 }
-                prop.transform.localPosition = Vector3Int.RoundToInt(prop.transform.localPosition);
 
-                float randomRotation = Random.Range(0, 4) * 90f;
-                prop.transform.localEulerAngles = randomRotation * Vector3.up;
-
-                propCount++;
+                if (spawnAttempts > maxSpawnAttempts)
+                {
+                    Debug.Log("prop spawn failed");
+                    Destroy(prop);
+                }
+                else
+                {
+                    float randomRotation = Random.Range(0, 4) * 90f;
+                    prop.transform.localEulerAngles = randomRotation * Vector3.up;
+                    propCount++;
+                    propSpawnSound.Play();
+                }
                 ResetPropSpawnTimer();
-
-                propSpawnSound.Play();
             }
         }
 
@@ -214,13 +232,6 @@ public class GameManager : MonoBehaviour
     {
         propCount--;
     }
-
-    /*
-    public SnakeHead FindTrainHead()
-    {
-        return GameObject.Find("Snake(Clone)").transform.GetChild(0).GetComponent<SnakeHead>();
-    }
-    */
 
     public void GameOver()
     {
