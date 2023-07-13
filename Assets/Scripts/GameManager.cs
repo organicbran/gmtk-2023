@@ -6,6 +6,11 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Rounds")]
+    [SerializeField] private int coinCostRoundAdd;
+    [SerializeField] private int snakeLengthRoundAdd;
+    [SerializeField] private int snakeSpeedRoundAdd;
+
     [Header("Stops")]
     [SerializeField] private int maxSpawnAttempts;
     [SerializeField] private int maxStops;
@@ -75,16 +80,18 @@ public class GameManager : MonoBehaviour
     private int speedAdd;
     private bool finalSoundPlayed;
 
+    private bool canHitTrain;
+
     private void Start()
     {
-        //Application.targetFrameRate = 30;
+        //Application.targetFrameRate = 60;
 
         propCount = 4;
-
         ResetStopSpawnTimer();
         ResetPropSpawnTimer();
         trainHead = GameObject.Find("Snake").transform.GetChild(0).GetComponent<SnakeHead>(); ;
 
+        Time.timeScale = 1f;
         targetTimeScale = 1f;
         score = 0;
         snakeStartLength = 3;
@@ -92,6 +99,8 @@ public class GameManager : MonoBehaviour
         player.SetCoinCost(coinCost);
         trainSpawnSound.Play();
         music.Play();
+
+        canHitTrain = true;
     }
 
     private void Update()
@@ -116,7 +125,7 @@ public class GameManager : MonoBehaviour
 
                 if (spawnAttempts > maxSpawnAttempts)
                 {
-                    Debug.Log("stop spawn failed");
+                    //Debug.Log("stop spawn failed");
                     Destroy(stop.gameObject);
                 }
                 else
@@ -149,7 +158,7 @@ public class GameManager : MonoBehaviour
 
                 if (spawnAttempts > maxSpawnAttempts)
                 {
-                    Debug.Log("prop spawn failed");
+                    //Debug.Log("prop spawn failed");
                     Destroy(prop);
                 }
                 else
@@ -246,10 +255,11 @@ public class GameManager : MonoBehaviour
 
     public void TrainCrashed(int length)
     {
+        canHitTrain = false;
         score += Mathf.FloorToInt((length * length) / 3);
-        coinCost++;
-        snakeStartLength++;
-        speedAdd += 20;
+        coinCost += coinCostRoundAdd;
+        snakeStartLength += snakeLengthRoundAdd;
+        speedAdd += snakeSpeedRoundAdd;
         player.SetCoinCost(coinCost);
         StartCoroutine(RespawnTrain());
     }
@@ -262,5 +272,19 @@ public class GameManager : MonoBehaviour
         trainHead = head;
         trainSpawnSound.Play();
         Instantiate(tunnelPrefab, Vector3.zero, Quaternion.identity);
+        canHitTrain = true;
+    }
+
+    public bool CanPlayerHitTrain()
+    {
+        return canHitTrain;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, stopSpawnClearanceRadius);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, propSpawnClearanceRadius);
     }
 }

@@ -168,8 +168,11 @@ public class Player : MonoBehaviour
 
     private void SnakeCollision()
     {
-        manager.GameOver();
-        Destroy(gameObject);
+        if (manager.CanPlayerHitTrain())
+        {
+            manager.GameOver();
+            Destroy(gameObject);
+        }
     }
 
     private void OnDrawGizmosSelected()

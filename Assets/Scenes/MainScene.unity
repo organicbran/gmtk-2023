@@ -12573,7 +12573,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbac01790e5837a4ab196a1682b44ef0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpawnAttempts: 10
+  coinCostRoundAdd: 1
+  snakeLengthRoundAdd: 1
+  snakeSpeedRoundAdd: 20
+  maxSpawnAttempts: 20
   maxStops: 8
   stopSpawnInterval: {x: 4, y: 8}
   stopSpawnRangeX: {x: -15, y: 15}
