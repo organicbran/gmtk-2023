@@ -69,7 +69,7 @@ public class SnakeHead : MonoBehaviour
 
     private void Update()
     {
-        if (target == transform.parent && transform.localPosition.x <= 12f)
+        if (target == transform.parent && (transform.localPosition.x <= 12f || transform.localPosition.z <= 12f))
         {
             target = player.transform;
         }
@@ -97,7 +97,9 @@ public class SnakeHead : MonoBehaviour
             Vector3 targetDirection = -(transform.position - target.position).normalized;
             targetRotationY = Quaternion.LookRotation(targetDirection).eulerAngles.y;
             if (pauseTimer == 0)
+            {
                 transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref rotationVelocity, turnSmoothTime);
+            }
 
             float playerDistance = Vector3.Distance(transform.position, player.transform.position);
             playerDistance = Mathf.Clamp(playerDistance, playerCloseDistance, playerFarDistance);

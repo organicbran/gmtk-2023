@@ -329,9 +329,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cfc02f504851b247a575387cdb38a45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationTime: 12
-  start: -50
-  height: 10
+  animationSegments: 10
+  animationTime: 10
+  start: -10
+  height: 5
 --- !u!1 &8233921216523598389
 GameObject:
   m_ObjectHideFlags: 0

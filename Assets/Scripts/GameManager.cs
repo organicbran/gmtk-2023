@@ -36,7 +36,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform world;
     [SerializeField] private GameObject[] propPrefabs;
     [SerializeField] private GameObject[] stopPrefabs;
-    [SerializeField] private LayerMask stopLayer;
     [SerializeField] private GameObject coinPrefab;
     [SerializeField] private LayerMask stopSpawnCheckLayer;
     [SerializeField] private GameObject passengerPrefab;
@@ -77,6 +76,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        //Application.targetFrameRate = 30;
+
         propCount = 4;
 
         ResetStopSpawnTimer();
@@ -144,7 +145,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Time.timeScale = Mathf.SmoothDamp(Time.timeScale, targetTimeScale, ref timeVelocity, timeAccelTime);
         if (gameOver)
         {
             gameOverCamDelayTimer += Time.unscaledDeltaTime;
@@ -172,6 +172,11 @@ public class GameManager : MonoBehaviour
 
         scoreText.text = "" + score;
         coinCostText.text = "" + coinCost;
+    }
+
+    private void FixedUpdate()
+    {
+        Time.timeScale = Mathf.SmoothDamp(Time.timeScale, targetTimeScale, ref timeVelocity, timeAccelTime);
     }
 
     private void ResetStopSpawnTimer()
