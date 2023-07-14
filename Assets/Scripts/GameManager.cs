@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int coinCostRoundAdd;
     [SerializeField] private int snakeLengthRoundAdd;
     [SerializeField] private int snakeSpeedRoundAdd;
+    [SerializeField] private Vector3 snakeSpawnPosition;
 
     [Header("Stops")]
     [SerializeField] private int maxSpawnAttempts;
@@ -89,7 +90,7 @@ public class GameManager : MonoBehaviour
         propCount = 4;
         ResetStopSpawnTimer();
         ResetPropSpawnTimer();
-        trainHead = GameObject.Find("Snake").transform.GetChild(0).GetComponent<SnakeHead>(); ;
+        trainHead = GameObject.Find("Snake").transform.GetChild(0).GetComponent<SnakeHead>();
 
         Time.timeScale = 1f;
         targetTimeScale = 1f;
@@ -267,7 +268,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator RespawnTrain()
     {
         yield return new WaitForSeconds(Random.Range(trainRespawnDelay.x, trainRespawnDelay.y));
-        SnakeHead head = Instantiate(snakePrefab, Vector3.zero, Quaternion.identity).transform.GetChild(0).GetComponent<SnakeHead>();
+        SnakeHead head = Instantiate(snakePrefab, snakeSpawnPosition, Quaternion.identity).transform.GetChild(0).GetComponent<SnakeHead>();
         head.Setup(player, this, snakeStartLength, speedAdd);
         trainHead = head;
         trainSpawnSound.Play();

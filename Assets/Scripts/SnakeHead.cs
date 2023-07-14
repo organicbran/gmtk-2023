@@ -11,6 +11,8 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private float playerFarDistance;
     [SerializeField] private float turnSmoothTime;
     [SerializeField] private float accel;
+    [SerializeField] private Vector3 playerStartTrackingPosition;
+    [SerializeField] private Transform initialTarget;
 
     [Header("Snake")]
     [SerializeField] [Range(1, 10)] private int startLength;
@@ -61,7 +63,7 @@ public class SnakeHead : MonoBehaviour
 
         StartCoroutine(InitialSpawn());
 
-        target = transform.parent;
+        target = initialTarget;
 
         trails = trailObject.GetComponentsInChildren<TrailRenderer>();
         propParticles.Stop(true);
@@ -69,7 +71,7 @@ public class SnakeHead : MonoBehaviour
 
     private void Update()
     {
-        if (target == transform.parent && (transform.localPosition.x <= 12f || transform.localPosition.z <= 12f))
+        if (target == initialTarget && (transform.position.x <= playerStartTrackingPosition.x || transform.position.z <= playerStartTrackingPosition.z))
         {
             target = player.transform;
         }
@@ -78,7 +80,9 @@ public class SnakeHead : MonoBehaviour
         {
             pauseTimer = Mathf.Max(pauseTimer - Time.deltaTime, 0);
             if (pauseTimer == 0)
+            {
                 PauseSnake(false);
+            } 
         }
 
         // animation
@@ -219,6 +223,7 @@ public class SnakeHead : MonoBehaviour
 
     public Transform GameOver()
     {
+        target = null;
         PauseSnake(true);
         pauseTimer = Mathf.Infinity;
         AddSegment();
