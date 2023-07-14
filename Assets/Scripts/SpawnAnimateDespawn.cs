@@ -27,7 +27,7 @@ public class SpawnAnimateDespawn : MonoBehaviour
         }
         else
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
 }

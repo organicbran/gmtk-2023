@@ -12,7 +12,6 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private float turnSmoothTime;
     [SerializeField] private float accel;
     [SerializeField] private Vector3 playerStartTrackingPosition;
-    [SerializeField] private Transform initialTarget;
 
     [Header("Snake")]
     [SerializeField] [Range(1, 10)] private int startLength;
@@ -28,6 +27,7 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private float bounceSegmentDelay;
     [SerializeField] private float bounceHeight;
     [SerializeField] private ParticleSystem propParticles;
+    [SerializeField] private GameObject explodeParticles;
     [SerializeField] private float explodeInterval;
 
     [Header("References")]
@@ -39,7 +39,6 @@ public class SnakeHead : MonoBehaviour
     [SerializeField] private AudioSource propSound;
     [SerializeField] private AudioSource stopSound;
     [SerializeField] private AudioSource crashSound;
-    [SerializeField] private AudioSource explodeSound;
 
     private List<SnakeSegment> segmentList = new List<SnakeSegment>();
     private Transform target;
@@ -49,6 +48,7 @@ public class SnakeHead : MonoBehaviour
     private float pauseTimer;
     private float animateIntervalTimer;
     private TrailRenderer[] trails;
+    private Transform startingTarget;
 
     private void Start()
     {
@@ -63,7 +63,8 @@ public class SnakeHead : MonoBehaviour
 
         StartCoroutine(InitialSpawn());
 
-        target = initialTarget;
+        target = GameObject.Find("Manager").transform;
+        startingTarget = target;
 
         trails = trailObject.GetComponentsInChildren<TrailRenderer>();
         propParticles.Stop(true);
@@ -71,7 +72,7 @@ public class SnakeHead : MonoBehaviour
 
     private void Update()
     {
-        if (target == initialTarget && (transform.position.x <= playerStartTrackingPosition.x || transform.position.z <= playerStartTrackingPosition.z))
+        if (target == startingTarget && (transform.position.x <= playerStartTrackingPosition.x || transform.position.z <= playerStartTrackingPosition.z))
         {
             target = player.transform;
         }
@@ -181,10 +182,13 @@ public class SnakeHead : MonoBehaviour
         for (int i = segmentList.Count - 1; i >= 0; i--)
         {
             yield return new WaitForSeconds(explodeInterval);
-            explodeSound.Play();
-            segmentList[i].Explode();
+
+            Instantiate(explodeParticles, segmentList[i].transform.position, Quaternion.identity);
+            Destroy(segmentList[i].gameObject);
             if (i == 0)
-                Destroy(gameObject);
+            {
+                Destroy(transform.parent.gameObject);
+            }
         }
     }
 

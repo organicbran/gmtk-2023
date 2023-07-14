@@ -82,6 +82,7 @@ public class GameManager : MonoBehaviour
     private bool finalSoundPlayed;
 
     private bool canHitTrain;
+    private bool canTrainCollide;
 
     private void Start()
     {
@@ -101,6 +102,7 @@ public class GameManager : MonoBehaviour
         trainSpawnSound.Play();
         music.Play();
 
+        canTrainCollide = true;
         canHitTrain = true;
     }
 
@@ -256,13 +258,17 @@ public class GameManager : MonoBehaviour
 
     public void TrainCrashed(int length)
     {
-        canHitTrain = false;
-        score += Mathf.FloorToInt((length * length) / 3);
-        coinCost += coinCostRoundAdd;
-        snakeStartLength += snakeLengthRoundAdd;
-        speedAdd += snakeSpeedRoundAdd;
-        player.SetCoinCost(coinCost);
-        StartCoroutine(RespawnTrain());
+        if (canTrainCollide)
+        {
+            canTrainCollide = false;
+            canHitTrain = false;
+            score += Mathf.FloorToInt((length * length) / 3);
+            coinCost += coinCostRoundAdd;
+            snakeStartLength += snakeLengthRoundAdd;
+            speedAdd += snakeSpeedRoundAdd;
+            player.SetCoinCost(coinCost);
+            StartCoroutine(RespawnTrain());
+        }
     }
 
     private IEnumerator RespawnTrain()
@@ -273,6 +279,7 @@ public class GameManager : MonoBehaviour
         trainHead = head;
         trainSpawnSound.Play();
         Instantiate(tunnelPrefab, Vector3.zero, Quaternion.identity);
+        canTrainCollide = true;
         canHitTrain = true;
     }
 
