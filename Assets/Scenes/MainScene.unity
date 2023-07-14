@@ -12580,20 +12580,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coinCostRoundAdd: 1
   snakeLengthRoundAdd: 1
-  snakeSpeedRoundAdd: 20
+  snakeSpeedRoundAdd: 40
   snakeSpawnPosition: {x: 35, y: 0, z: 35}
-  maxSpawnAttempts: 20
+  maxSpawnAttempts: 30
   maxStops: 8
   stopSpawnInterval: {x: 4, y: 8}
   stopSpawnRangeX: {x: -15, y: 15}
   stopSpawnRangeZ: {x: -15, y: 15}
   stopSpawnClearanceRadius: 3
-  maxProps: 5
+  maxProps: 6
   propSpawnInterval: {x: 4, y: 12}
   propSpawnRangeX: {x: -13, y: 13}
   propSpawnRangeZ: {x: -13, y: 13}
-  propSpawnClearanceRadius: 6
-  coinChanceDestroyedProp: 0.2
+  propSpawnClearanceRadius: 5
+  coinChanceDestroyedProp: 0.4
   coinCost: 2
   timeAccelTime: 0.25
   gameOverTimeScale: 0.1
